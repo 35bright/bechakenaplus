@@ -10,6 +10,7 @@ import { PromoSplitBanners } from '@/components/home/PromoSplitBanners';
 import { DealsSection } from '@/components/home/DealsSection';
 import { AdsterraSlot } from '@/components/ads/AdsterraSlot';
 import { AdsterraPopunder } from '@/components/ads/AdsterraPopunder';
+import { AdsterraSocialBar } from '@/components/ads/AdsterraSocialBar';
 import { Category, Product, Banner, SiteSettings } from '@/types/database';
 
 // Real-time dynamic rendering (ensures any admin updates show immediately with zero cache lag)
@@ -40,9 +41,15 @@ export default async function HomePage() {
 
   return (
     <div className="min-h-screen flex flex-col bg-[#fbfdfc]">
-      {/* 1. Popunder Ad (injected globally when configured) */}
+      {/* 1. Popunder Ad */}
       <AdsterraPopunder
         popunderCode={adSettings?.adsterra_popunder_code}
+        enabled={showOnHome}
+      />
+
+      {/* 2. Social Bar In-Page Push Widget */}
+      <AdsterraSocialBar
+        socialBarCode={adSettings?.adsterra_socialbar_code}
         enabled={showOnHome}
       />
 

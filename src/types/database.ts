@@ -25,6 +25,7 @@ export interface SiteSettings {
     adsterra_skyscraper_160x600_code?: string;
     adsterra_native_code?: string;
     adsterra_popunder_code?: string;
+    adsterra_socialbar_code?: string;
     adsterra_banner_code?: string;
     show_on_homepage?: boolean;
     show_on_product_page?: boolean;

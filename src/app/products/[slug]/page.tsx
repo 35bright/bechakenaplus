@@ -7,6 +7,7 @@ import { Footer } from '@/components/common/Footer';
 import { BottomNav } from '@/components/common/BottomNav';
 import { ProductDetailView } from '@/components/product/ProductDetailView';
 import { AdsterraPopunder } from '@/components/ads/AdsterraPopunder';
+import { AdsterraSocialBar } from '@/components/ads/AdsterraSocialBar';
 import { Product, Category, SiteSettings } from '@/types/database';
 
 export const dynamic = 'force-dynamic';
@@ -140,6 +141,11 @@ export default async function ProductDetailPage({ params }: ProductPageProps) {
     <div className="min-h-screen flex flex-col bg-[#fbfdfc]">
       <AdsterraPopunder
         popunderCode={adSettings?.adsterra_popunder_code}
+        enabled={showPopunder}
+      />
+
+      <AdsterraSocialBar
+        socialBarCode={adSettings?.adsterra_socialbar_code}
         enabled={showPopunder}
       />
 
