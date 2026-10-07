@@ -6,7 +6,7 @@ import {
   Star, Heart, ExternalLink, ShieldCheck, RotateCcw, 
   Banknote, Truck, Check, Share2, Volume2, Battery, Sparkles, Music, ChevronRight
 } from 'lucide-react';
-import { Product } from '@/types/database';
+import { Product, SiteSettings } from '@/types/database';
 import { useWishlist } from '@/context/WishlistContext';
 import { useToast } from '@/context/ToastContext';
 import { ProductCard } from './ProductCard';
@@ -15,9 +15,10 @@ import { AdsterraSlot } from '@/components/ads/AdsterraSlot';
 interface ProductDetailViewProps {
   product: Product;
   relatedProducts: Product[];
+  adSettings?: SiteSettings['ad_settings'];
 }
 
-export function ProductDetailView({ product, relatedProducts }: ProductDetailViewProps) {
+export function ProductDetailView({ product, relatedProducts, adSettings }: ProductDetailViewProps) {
   const { isInWishlist, toggleWishlist } = useWishlist();
   const { toast } = useToast();
 
@@ -420,8 +421,14 @@ export function ProductDetailView({ product, relatedProducts }: ProductDetailVie
           </div>
         </div>
 
-        {/* 4. Sponsored Ad Slot (Adsterra) */}
-        <AdsterraSlot type="banner" />
+        {/* 4. Sponsored Ad Slot (Adsterra Leaderboard 728x90) */}
+        {(adSettings?.enabled ?? true) && (adSettings?.show_on_product_page ?? true) && (
+          <AdsterraSlot
+            type="728x90"
+            adCode={adSettings?.adsterra_banner_728x90_code || adSettings?.adsterra_banner_code}
+            slotLabel="Sponsored Partner • 728×90"
+          />
+        )}
 
         {/* 5. Related Products Section */}
         {relatedProducts.length > 0 && (

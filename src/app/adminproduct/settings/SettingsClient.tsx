@@ -1,7 +1,7 @@
 'use client';
 
 import React, { useState } from 'react';
-import { Save, Loader2, Settings, ShieldCheck, Tag, Code, Globe } from 'lucide-react';
+import { Save, Loader2, Tag, Code, Globe, ShieldCheck, HelpCircle } from 'lucide-react';
 import { SiteSettings } from '@/types/database';
 import { useToast } from '@/context/ToastContext';
 
@@ -33,10 +33,18 @@ export function SettingsClient({ initialSettings }: SettingsClientProps) {
   const [youtube, setYoutube] = useState(initialSettings?.social_links?.youtube || 'https://youtube.com');
   const [tiktok, setTiktok] = useState(initialSettings?.social_links?.tiktok || 'https://tiktok.com');
 
-  // Adsterra Ads Configuration
+  // 4 Adsterra Ad Formats
   const [adsEnabled, setAdsEnabled] = useState(initialSettings?.ad_settings?.enabled ?? true);
-  const [adsterraBannerCode, setAdsterraBannerCode] = useState(initialSettings?.ad_settings?.adsterra_banner_code || '');
-  const [adsterraNativeCode, setAdsterraNativeCode] = useState(initialSettings?.ad_settings?.adsterra_native_code || '');
+  const [adsterraBanner728x90, setAdsterraBanner728x90] = useState(
+    initialSettings?.ad_settings?.adsterra_banner_728x90_code || initialSettings?.ad_settings?.adsterra_banner_code || ''
+  );
+  const [adsterraNative, setAdsterraNative] = useState(initialSettings?.ad_settings?.adsterra_native_code || '');
+  const [adsterraSkyscraper160x600, setAdsterraSkyscraper160x600] = useState(
+    initialSettings?.ad_settings?.adsterra_skyscraper_160x600_code || ''
+  );
+  const [adsterraPopunder, setAdsterraPopunder] = useState(initialSettings?.ad_settings?.adsterra_popunder_code || '');
+
+  // Placement Toggles
   const [showOnHomepage, setShowOnHomepage] = useState(initialSettings?.ad_settings?.show_on_homepage ?? true);
   const [showOnProductPage, setShowOnProductPage] = useState(initialSettings?.ad_settings?.show_on_product_page ?? true);
   const [showOnCategoryPage, setShowOnCategoryPage] = useState(initialSettings?.ad_settings?.show_on_category_page ?? true);
@@ -67,8 +75,11 @@ export function SettingsClient({ initialSettings }: SettingsClientProps) {
       },
       ad_settings: {
         enabled: adsEnabled,
-        adsterra_banner_code: adsterraBannerCode,
-        adsterra_native_code: adsterraNativeCode,
+        adsterra_banner_728x90_code: adsterraBanner728x90,
+        adsterra_banner_code: adsterraBanner728x90,
+        adsterra_native_code: adsterraNative,
+        adsterra_skyscraper_160x600_code: adsterraSkyscraper160x600,
+        adsterra_popunder_code: adsterraPopunder,
         show_on_homepage: showOnHomepage,
         show_on_product_page: showOnProductPage,
         show_on_category_page: showOnCategoryPage,
@@ -97,12 +108,12 @@ export function SettingsClient({ initialSettings }: SettingsClientProps) {
   };
 
   return (
-    <form onSubmit={handleSubmit} className="space-y-8 max-w-4xl">
-      {/* 1. General Branding */}
-      <div className="bg-white p-6 sm:p-8 rounded-3xl border border-gray-100 shadow-2xs space-y-4">
+    <form onSubmit={handleSubmit} className="space-y-8 max-w-4xl pb-12">
+      {/* 1. Brand & General Info */}
+      <div className="bg-white p-6 sm:p-8 rounded-3xl border border-gray-100 shadow-2xs space-y-6">
         <h3 className="font-heading font-bold text-base text-gray-900 flex items-center gap-2 border-b border-gray-100 pb-3">
           <Globe className="w-4 h-4 text-[#0B5D36]" />
-          <span>Brand & Store Identity</span>
+          <span>General Store Information</span>
         </h3>
 
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
@@ -110,14 +121,14 @@ export function SettingsClient({ initialSettings }: SettingsClientProps) {
             <label className="block text-xs font-bold text-gray-700 uppercase mb-1">Store Name</label>
             <input
               type="text"
-              required
               value={storeName}
               onChange={(e) => setStoreName(e.target.value)}
               className="w-full px-3.5 py-2.5 bg-[#f8faf9] border border-gray-200 rounded-xl text-xs outline-hidden focus:border-[#0B5D36]"
             />
           </div>
+
           <div>
-            <label className="block text-xs font-bold text-gray-700 uppercase mb-1">Tagline Slogan</label>
+            <label className="block text-xs font-bold text-gray-700 uppercase mb-1">Brand Tagline</label>
             <input
               type="text"
               value={tagline}
@@ -125,48 +136,36 @@ export function SettingsClient({ initialSettings }: SettingsClientProps) {
               className="w-full px-3.5 py-2.5 bg-[#f8faf9] border border-gray-200 rounded-xl text-xs outline-hidden focus:border-[#0B5D36]"
             />
           </div>
-        </div>
 
-        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
           <div>
-            <label className="block text-xs font-bold text-gray-700 uppercase mb-1">Contact Support Email</label>
+            <label className="block text-xs font-bold text-gray-700 uppercase mb-1">Support Email</label>
             <input
               type="email"
               value={contactEmail}
               onChange={(e) => setContactEmail(e.target.value)}
-              className="w-full px-3.5 py-2.5 bg-[#f8faf9] border border-gray-200 rounded-xl text-xs outline-hidden"
+              className="w-full px-3.5 py-2.5 bg-[#f8faf9] border border-gray-200 rounded-xl text-xs outline-hidden focus:border-[#0B5D36]"
             />
           </div>
+
           <div>
-            <label className="block text-xs font-bold text-gray-700 uppercase mb-1">Customer Helpline Phone</label>
+            <label className="block text-xs font-bold text-gray-700 uppercase mb-1">Support Phone</label>
             <input
               type="text"
               value={contactPhone}
               onChange={(e) => setContactPhone(e.target.value)}
-              className="w-full px-3.5 py-2.5 bg-[#f8faf9] border border-gray-200 rounded-xl text-xs outline-hidden"
+              className="w-full px-3.5 py-2.5 bg-[#f8faf9] border border-gray-200 rounded-xl text-xs outline-hidden focus:border-[#0B5D36]"
             />
           </div>
         </div>
 
-        <div className="grid grid-cols-2 gap-4">
-          <div>
-            <label className="block text-xs font-bold text-gray-700 uppercase mb-1">Currency Symbol</label>
-            <input
-              type="text"
-              value={currencySymbol}
-              onChange={(e) => setCurrencySymbol(e.target.value)}
-              className="w-full px-3.5 py-2.5 bg-[#f8faf9] border border-gray-200 rounded-xl text-xs outline-hidden font-bold"
-            />
-          </div>
-          <div>
-            <label className="block text-xs font-bold text-gray-700 uppercase mb-1">Currency Code</label>
-            <input
-              type="text"
-              value={currencyCode}
-              onChange={(e) => setCurrencyCode(e.target.value)}
-              className="w-full px-3.5 py-2.5 bg-[#f8faf9] border border-gray-200 rounded-xl text-xs outline-hidden uppercase font-mono"
-            />
-          </div>
+        <div>
+          <label className="block text-xs font-bold text-gray-700 uppercase mb-1">Footer Copyright Text</label>
+          <input
+            type="text"
+            value={footerText}
+            onChange={(e) => setFooterText(e.target.value)}
+            className="w-full px-3.5 py-2.5 bg-[#f8faf9] border border-gray-200 rounded-xl text-xs outline-hidden focus:border-[#0B5D36]"
+          />
         </div>
       </div>
 
@@ -210,55 +209,124 @@ export function SettingsClient({ initialSettings }: SettingsClientProps) {
         </div>
       </div>
 
-      {/* 3. Adsterra Ads Integration */}
-      <div className="bg-white p-6 sm:p-8 rounded-3xl border border-gray-100 shadow-2xs space-y-4">
+      {/* 3. Adsterra 4 Ad Units Integration */}
+      <div className="bg-white p-6 sm:p-8 rounded-3xl border border-gray-100 shadow-2xs space-y-6">
         <div className="flex items-center justify-between border-b border-gray-100 pb-3">
           <div>
             <h3 className="font-heading font-bold text-base text-gray-900 flex items-center gap-2">
               <Code className="w-4 h-4 text-[#0B5D36]" />
-              <span>Adsterra Third-Party Ads</span>
+              <span>Adsterra 4 Ad Units Configuration</span>
             </h3>
-            <p className="text-xs text-gray-400 mt-0.5">Control advertising banners and scripts across the website</p>
+            <p className="text-xs text-gray-500 mt-0.5">
+              Paste the codes from your Adsterra dashboard (<code className="font-mono text-[#0B5D36]">GET CODE</code>)
+            </p>
           </div>
-          <label className="flex items-center gap-2 text-xs font-semibold cursor-pointer">
+          <label className="flex items-center gap-2 text-xs font-semibold cursor-pointer bg-emerald-50 px-3 py-1.5 rounded-full text-[#0B5D36] border border-emerald-200">
             <input
               type="checkbox"
               checked={adsEnabled}
               onChange={(e) => setAdsEnabled(e.target.checked)}
               className="w-4 h-4 accent-[#0B5D36]"
             />
-            <span>Enable Ads</span>
+            <span>Enable Advertising</span>
           </label>
         </div>
 
-        <div>
-          <label className="block text-xs font-bold text-gray-700 uppercase mb-1">
-            Adsterra Banner Script / HTML Code
-          </label>
-          <textarea
-            rows={4}
-            value={adsterraBannerCode}
-            onChange={(e) => setAdsterraBannerCode(e.target.value)}
-            placeholder="Paste your Adsterra 728x90 or 300x250 script code here..."
-            className="w-full p-3 bg-[#f8faf9] border border-gray-200 rounded-xl text-xs font-mono outline-hidden focus:border-[#0B5D36]"
-          />
-        </div>
-
-        <div>
-          <label className="block text-xs font-bold text-gray-700 uppercase mb-1">
-            Adsterra Native / In-Feed Script Code
-          </label>
+        {/* Ad 1: Banner 728x90 */}
+        <div className="p-4 rounded-2xl bg-[#f8faf9] border border-gray-200/80 space-y-2">
+          <div className="flex items-center justify-between">
+            <label className="text-xs font-bold text-gray-800 flex items-center gap-2">
+              <span className="w-2 h-2 rounded-full bg-[#0B5D36]" />
+              <span>1. Banner 728×90 (Leaderboard)</span>
+            </label>
+            <span className="text-[10px] font-mono text-gray-400 bg-white px-2 py-0.5 rounded border border-gray-200">
+              Unit: 728x90_1 (ID: 31610405)
+            </span>
+          </div>
+          <p className="text-[11px] text-gray-500">
+            Renders on Homepage, Category pages, Deals, and Product detail headers/footers.
+          </p>
           <textarea
             rows={3}
-            value={adsterraNativeCode}
-            onChange={(e) => setAdsterraNativeCode(e.target.value)}
-            placeholder="Paste native ad code here..."
-            className="w-full p-3 bg-[#f8faf9] border border-gray-200 rounded-xl text-xs font-mono outline-hidden focus:border-[#0B5D36]"
+            value={adsterraBanner728x90}
+            onChange={(e) => setAdsterraBanner728x90(e.target.value)}
+            placeholder="Paste your Adsterra 728x90 script code here..."
+            className="w-full p-3 bg-white border border-gray-200 rounded-xl text-xs font-mono outline-hidden focus:border-[#0B5D36]"
           />
         </div>
 
+        {/* Ad 2: Native Banner */}
+        <div className="p-4 rounded-2xl bg-[#f8faf9] border border-gray-200/80 space-y-2">
+          <div className="flex items-center justify-between">
+            <label className="text-xs font-bold text-gray-800 flex items-center gap-2">
+              <span className="w-2 h-2 rounded-full bg-[#0B5D36]" />
+              <span>2. Native Banner (In-Feed)</span>
+            </label>
+            <span className="text-[10px] font-mono text-gray-400 bg-white px-2 py-0.5 rounded border border-gray-200">
+              Unit: NativeBanner_1 (ID: 31610403)
+            </span>
+          </div>
+          <p className="text-[11px] text-gray-500">
+            Seamlessly blends in product catalog feeds, blog articles, and discovery sections.
+          </p>
+          <textarea
+            rows={3}
+            value={adsterraNative}
+            onChange={(e) => setAdsterraNative(e.target.value)}
+            placeholder="Paste your Adsterra Native Banner script code here..."
+            className="w-full p-3 bg-white border border-gray-200 rounded-xl text-xs font-mono outline-hidden focus:border-[#0B5D36]"
+          />
+        </div>
+
+        {/* Ad 3: Banner 160x600 */}
+        <div className="p-4 rounded-2xl bg-[#f8faf9] border border-gray-200/80 space-y-2">
+          <div className="flex items-center justify-between">
+            <label className="text-xs font-bold text-gray-800 flex items-center gap-2">
+              <span className="w-2 h-2 rounded-full bg-[#0B5D36]" />
+              <span>3. Banner 160×600 (Skyscraper)</span>
+            </label>
+            <span className="text-[10px] font-mono text-gray-400 bg-white px-2 py-0.5 rounded border border-gray-200">
+              Unit: 160x600_1 (ID: 31610404)
+            </span>
+          </div>
+          <p className="text-[11px] text-gray-500">
+            Vertical skyscraper placement for wide PC screens beside product listings and detail views.
+          </p>
+          <textarea
+            rows={3}
+            value={adsterraSkyscraper160x600}
+            onChange={(e) => setAdsterraSkyscraper160x600(e.target.value)}
+            placeholder="Paste your Adsterra 160x600 script code here..."
+            className="w-full p-3 bg-white border border-gray-200 rounded-xl text-xs font-mono outline-hidden focus:border-[#0B5D36]"
+          />
+        </div>
+
+        {/* Ad 4: Popunder */}
+        <div className="p-4 rounded-2xl bg-[#f8faf9] border border-gray-200/80 space-y-2">
+          <div className="flex items-center justify-between">
+            <label className="text-xs font-bold text-gray-800 flex items-center gap-2">
+              <span className="w-2 h-2 rounded-full bg-[#0B5D36]" />
+              <span>4. Popunder Script</span>
+            </label>
+            <span className="text-[10px] font-mono text-gray-400 bg-white px-2 py-0.5 rounded border border-gray-200">
+              Unit: Popunder_1 (ID: 31610407)
+            </span>
+          </div>
+          <p className="text-[11px] text-gray-500">
+            Injected globally to run on user click events across all customer pages.
+          </p>
+          <textarea
+            rows={3}
+            value={adsterraPopunder}
+            onChange={(e) => setAdsterraPopunder(e.target.value)}
+            placeholder="Paste your Adsterra Popunder script code here..."
+            className="w-full p-3 bg-white border border-gray-200 rounded-xl text-xs font-mono outline-hidden focus:border-[#0B5D36]"
+          />
+        </div>
+
+        {/* Placement Toggles */}
         <div className="pt-2">
-          <label className="block text-xs font-bold text-gray-700 uppercase mb-2">Ad Placements</label>
+          <label className="block text-xs font-bold text-gray-700 uppercase mb-2">Enabled Pages</label>
           <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
             <label className="flex items-center gap-2 text-xs text-gray-700 cursor-pointer">
               <input
@@ -300,53 +368,62 @@ export function SettingsClient({ initialSettings }: SettingsClientProps) {
         </div>
       </div>
 
-      {/* 4. Social Links & Footer */}
+      {/* 4. Social Links */}
       <div className="bg-white p-6 sm:p-8 rounded-3xl border border-gray-100 shadow-2xs space-y-4">
-        <h3 className="font-heading font-bold text-base text-gray-900 border-b border-gray-100 pb-3">
-          Social Links & Footer
+        <h3 className="font-heading font-bold text-base text-gray-900 flex items-center gap-2 border-b border-gray-100 pb-3">
+          <Globe className="w-4 h-4 text-[#0B5D36]" />
+          <span>Social Media Links</span>
         </h3>
 
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
           <div>
-            <label className="block text-xs font-bold text-gray-700 uppercase mb-1">Facebook URL</label>
+            <label className="block text-xs font-bold text-gray-700 uppercase mb-1">Facebook</label>
             <input
-              type="url"
+              type="text"
               value={facebook}
               onChange={(e) => setFacebook(e.target.value)}
-              className="w-full px-3.5 py-2.5 bg-[#f8faf9] border border-gray-200 rounded-xl text-xs outline-hidden"
+              className="w-full px-3.5 py-2.5 bg-[#f8faf9] border border-gray-200 rounded-xl text-xs outline-hidden focus:border-[#0B5D36]"
             />
           </div>
           <div>
-            <label className="block text-xs font-bold text-gray-700 uppercase mb-1">Instagram URL</label>
+            <label className="block text-xs font-bold text-gray-700 uppercase mb-1">Instagram</label>
             <input
-              type="url"
+              type="text"
               value={instagram}
               onChange={(e) => setInstagram(e.target.value)}
-              className="w-full px-3.5 py-2.5 bg-[#f8faf9] border border-gray-200 rounded-xl text-xs outline-hidden"
+              className="w-full px-3.5 py-2.5 bg-[#f8faf9] border border-gray-200 rounded-xl text-xs outline-hidden focus:border-[#0B5D36]"
             />
           </div>
-        </div>
-
-        <div>
-          <label className="block text-xs font-bold text-gray-700 uppercase mb-1">Footer Copyright & Disclaimer</label>
-          <input
-            type="text"
-            value={footerText}
-            onChange={(e) => setFooterText(e.target.value)}
-            className="w-full px-3.5 py-2.5 bg-[#f8faf9] border border-gray-200 rounded-xl text-xs outline-hidden"
-          />
+          <div>
+            <label className="block text-xs font-bold text-gray-700 uppercase mb-1">YouTube</label>
+            <input
+              type="text"
+              value={youtube}
+              onChange={(e) => setYoutube(e.target.value)}
+              className="w-full px-3.5 py-2.5 bg-[#f8faf9] border border-gray-200 rounded-xl text-xs outline-hidden focus:border-[#0B5D36]"
+            />
+          </div>
+          <div>
+            <label className="block text-xs font-bold text-gray-700 uppercase mb-1">TikTok</label>
+            <input
+              type="text"
+              value={tiktok}
+              onChange={(e) => setTiktok(e.target.value)}
+              className="w-full px-3.5 py-2.5 bg-[#f8faf9] border border-gray-200 rounded-xl text-xs outline-hidden focus:border-[#0B5D36]"
+            />
+          </div>
         </div>
       </div>
 
       {/* Save Button */}
-      <div className="flex justify-end">
+      <div className="flex justify-end pt-4">
         <button
           type="submit"
           disabled={isSaving}
-          className="flex items-center gap-2 px-8 py-3.5 bg-[#0B5D36] hover:bg-[#074528] text-white font-heading font-bold text-xs rounded-2xl shadow-md transition-all disabled:opacity-50 cursor-pointer"
+          className="flex items-center gap-2 px-8 py-3.5 rounded-full bg-[#0B5D36] hover:bg-[#074528] text-white font-heading font-bold text-sm shadow-md hover:shadow-lg transition-all disabled:opacity-50 cursor-pointer"
         >
           {isSaving ? <Loader2 className="w-4 h-4 animate-spin" /> : <Save className="w-4 h-4" />}
-          <span>Save Store Settings</span>
+          <span>Save All Settings</span>
         </button>
       </div>
     </form>

@@ -6,6 +6,7 @@ import { Header } from '@/components/common/Header';
 import { Footer } from '@/components/common/Footer';
 import { BottomNav } from '@/components/common/BottomNav';
 import { ProductDetailView } from '@/components/product/ProductDetailView';
+import { AdsterraPopunder } from '@/components/ads/AdsterraPopunder';
 import { Product, Category, SiteSettings } from '@/types/database';
 
 export const dynamic = 'force-dynamic';
@@ -132,8 +133,16 @@ export default async function ProductDetailPage({ params }: ProductPageProps) {
     },
   };
 
+  const adSettings = (settings as SiteSettings)?.ad_settings;
+  const showPopunder = (adSettings?.enabled ?? true) && (adSettings?.show_on_product_page ?? true);
+
   return (
     <div className="min-h-screen flex flex-col bg-[#fbfdfc]">
+      <AdsterraPopunder
+        popunderCode={adSettings?.adsterra_popunder_code}
+        enabled={showPopunder}
+      />
+
       <script
         type="application/ld+json"
         dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
@@ -142,7 +151,11 @@ export default async function ProductDetailPage({ params }: ProductPageProps) {
       <Header categories={categories || []} settings={settings as SiteSettings} />
       
       <main className="flex-1">
-        <ProductDetailView product={product as Product} relatedProducts={(related as Product[]) || []} />
+        <ProductDetailView
+          product={product as Product}
+          relatedProducts={(related as Product[]) || []}
+          adSettings={adSettings}
+        />
       </main>
 
       <Footer categories={categories || []} settings={settings as SiteSettings} />

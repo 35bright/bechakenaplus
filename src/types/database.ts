@@ -21,9 +21,11 @@ export interface SiteSettings {
   };
   ad_settings: {
     enabled: boolean;
-    adsterra_banner_code?: string;
+    adsterra_banner_728x90_code?: string;
+    adsterra_skyscraper_160x600_code?: string;
     adsterra_native_code?: string;
     adsterra_popunder_code?: string;
+    adsterra_banner_code?: string;
     show_on_homepage?: boolean;
     show_on_product_page?: boolean;
     show_on_category_page?: boolean;
