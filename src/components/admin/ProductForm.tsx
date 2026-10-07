@@ -39,6 +39,11 @@ export function ProductForm({ initialProduct, categories, isEditing = false }: P
   const [oldPrice, setOldPrice] = useState<number | string>(initialProduct?.original_price !== undefined ? initialProduct.original_price : '');
   const [discountPercent, setDiscountPercent] = useState<number>(initialProduct?.discount_percent || 0);
 
+  // Real Social Proof / Rating from Daraz (Optional)
+  const [rating, setRating] = useState<number | string>(initialProduct?.rating !== undefined && initialProduct.rating !== null ? initialProduct.rating : '');
+  const [reviewCount, setReviewCount] = useState<number | string>(initialProduct?.review_count !== undefined && initialProduct.review_count !== null ? initialProduct.review_count : '');
+  const [soldCount, setSoldCount] = useState<string>(initialProduct?.sold_count || '');
+
   // Destination
   const [darazUrl, setDarazUrl] = useState(initialProduct?.daraz_url || '');
   const [customCtaText, setCustomCtaText] = useState(initialProduct?.custom_cta_text || 'View on Daraz');
@@ -155,6 +160,9 @@ export function ProductForm({ initialProduct, categories, isEditing = false }: P
       price: Number(price),
       original_price: oldPrice ? Number(oldPrice) : null,
       discount_percent: discountPercent,
+      rating: rating !== '' && !isNaN(Number(rating)) ? Math.min(5, Math.max(0, Number(rating))) : null,
+      review_count: reviewCount !== '' && !isNaN(Number(reviewCount)) ? parseInt(String(reviewCount), 10) : 0,
+      sold_count: soldCount.trim() || null,
       daraz_url: darazUrl.trim(),
       custom_cta_text: customCtaText.trim() || 'View on Daraz',
       primary_image: primaryImage.trim(),
@@ -443,6 +451,63 @@ export function ProductForm({ initialProduct, categories, isEditing = false }: P
                   placeholder="View on Daraz"
                   className="w-full px-4 py-3 bg-[#f8faf9] border border-gray-200 rounded-xl text-xs text-gray-900 outline-hidden focus:border-[#0B5D36]"
                 />
+              </div>
+            </div>
+
+            {/* Real Rating & Review Count from Daraz */}
+            <div className="pt-3 border-t border-gray-100">
+              <div className="flex items-center gap-2 mb-2">
+                <span className="text-xs font-bold text-gray-800 uppercase tracking-wider">
+                  Real Daraz Rating & Reviews (Optional)
+                </span>
+                <span className="text-[10px] text-gray-400 font-medium">
+                  Leave blank if no reviews yet (prevents fake reviews)
+                </span>
+              </div>
+              <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
+                <div>
+                  <label className="block text-xs font-bold text-gray-700 uppercase tracking-wider mb-1.5">
+                    Product Rating (0.0 – 5.0)
+                  </label>
+                  <input
+                    type="number"
+                    min="0"
+                    max="5"
+                    step="0.1"
+                    value={rating}
+                    onChange={(e) => setRating(e.target.value)}
+                    placeholder="e.g. 4.8"
+                    className="w-full px-4 py-3 bg-[#f8faf9] border border-gray-200 rounded-xl text-xs text-gray-900 outline-hidden focus:border-[#0B5D36]"
+                  />
+                </div>
+
+                <div>
+                  <label className="block text-xs font-bold text-gray-700 uppercase tracking-wider mb-1.5">
+                    Review Count
+                  </label>
+                  <input
+                    type="number"
+                    min="0"
+                    step="1"
+                    value={reviewCount}
+                    onChange={(e) => setReviewCount(e.target.value)}
+                    placeholder="e.g. 120"
+                    className="w-full px-4 py-3 bg-[#f8faf9] border border-gray-200 rounded-xl text-xs text-gray-900 outline-hidden focus:border-[#0B5D36]"
+                  />
+                </div>
+
+                <div>
+                  <label className="block text-xs font-bold text-gray-700 uppercase tracking-wider mb-1.5">
+                    Sold / Order Count
+                  </label>
+                  <input
+                    type="text"
+                    value={soldCount}
+                    onChange={(e) => setSoldCount(e.target.value)}
+                    placeholder="e.g. 50+ sold"
+                    className="w-full px-4 py-3 bg-[#f8faf9] border border-gray-200 rounded-xl text-xs text-gray-900 outline-hidden focus:border-[#0B5D36]"
+                  />
+                </div>
               </div>
             </div>
           </div>

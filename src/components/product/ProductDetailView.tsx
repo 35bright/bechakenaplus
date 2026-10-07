@@ -32,7 +32,7 @@ export function ProductDetailView({ product, relatedProducts, adSettings }: Prod
   ].filter((img, idx, arr) => img && arr.indexOf(img) === idx);
 
   const [selectedImage, setSelectedImage] = useState(allImages[0] || product.primary_image);
-  const [activeTab, setActiveTab] = useState<'description' | 'specifications' | 'reviews' | 'delivery' | 'returns'>('description');
+  const [activeTab, setActiveTab] = useState<'description' | 'specifications'>('description');
 
   const handleShare = () => {
     if (typeof window !== 'undefined') {
@@ -169,20 +169,32 @@ export function ProductDetailView({ product, relatedProducts, adSettings }: Prod
                 </p>
               )}
 
-              {/* Rating & Social Proof */}
-              <div className="flex items-center gap-3 mt-3.5 pb-4 border-b border-gray-100 flex-wrap text-xs sm:text-sm">
-                <div className="flex items-center gap-1 text-amber-500 font-bold">
-                  <Star className="w-4 h-4 fill-amber-400 text-amber-400" />
-                  <span className="text-gray-900 font-heading">{product.rating ? Number(product.rating).toFixed(1) : '4.8'}</span>
+              {/* Rating & Social Proof (Only displayed when real data exists) */}
+              {Boolean((product.rating && Number(product.rating) > 0) || product.sold_count) && (
+                <div className="flex items-center gap-3 mt-3.5 pb-4 border-b border-gray-100 flex-wrap text-xs sm:text-sm">
+                  {Boolean(product.rating && Number(product.rating) > 0) && (
+                    <>
+                      <div className="flex items-center gap-1 text-amber-500 font-bold">
+                        <Star className="w-4 h-4 fill-amber-400 text-amber-400" />
+                        <span className="text-gray-900 font-heading">{Number(product.rating).toFixed(1)}</span>
+                      </div>
+                      {Boolean(product.review_count && product.review_count > 0) && (
+                        <span className="text-gray-400">
+                          ({product.review_count > 999 ? (product.review_count / 1000).toFixed(1) + 'K' : product.review_count} reviews)
+                        </span>
+                      )}
+                    </>
+                  )}
+                  {Boolean(product.sold_count) && (
+                    <>
+                      {Boolean(product.rating && Number(product.rating) > 0) && <span className="text-gray-300">•</span>}
+                      <span className="text-emerald-700 font-semibold bg-emerald-50 px-2.5 py-0.5 rounded-full">
+                        {product.sold_count}
+                      </span>
+                    </>
+                  )}
                 </div>
-                <span className="text-gray-400">
-                  ({product.review_count ? `${product.review_count > 999 ? (product.review_count / 1000).toFixed(1) + 'K' : product.review_count}` : '2.1K'} reviews)
-                </span>
-                <span className="text-gray-300">•</span>
-                <span className="text-emerald-700 font-semibold bg-emerald-50 px-2.5 py-0.5 rounded-full">
-                  {product.sold_count || '10K+ sold'}
-                </span>
-              </div>
+              )}
 
               {/* Trust Badges Strip (matching reference image!) */}
               <div className="grid grid-cols-2 gap-2.5 my-4 text-xs text-gray-600">
@@ -277,148 +289,74 @@ export function ProductDetailView({ product, relatedProducts, adSettings }: Prod
 
         </div>
 
-        {/* 3. Product Tabs Section */}
+        {/* 3. Product Details Section (Description & Specifications) */}
         <div className="bg-white rounded-3xl p-6 sm:p-8 border border-gray-100 shadow-2xs mt-8">
-          {/* Tabs Navigation */}
-          <div className="flex items-center gap-2 border-b border-gray-100 overflow-x-auto no-scrollbar pb-1">
-            {[
-              { id: 'description', label: 'Description' },
-              { id: 'specifications', label: 'Specifications' },
-              { id: 'reviews', label: `Reviews (${product.review_count || '2.1K'})` },
-              { id: 'delivery', label: 'Delivery' },
-              { id: 'returns', label: 'Return Policy' },
-            ].map((tab) => (
-              <button
-                key={tab.id}
-                onClick={() => setActiveTab(tab.id as typeof activeTab)}
-                className={`px-4 sm:px-6 py-3 font-heading font-semibold text-xs sm:text-sm whitespace-nowrap transition-all border-b-2 -mb-px ${
-                  activeTab === tab.id
-                    ? 'border-[#0B5D36] text-[#0B5D36]'
-                    : 'border-transparent text-gray-500 hover:text-gray-900'
-                }`}
-              >
-                {tab.label}
-              </button>
-            ))}
-          </div>
+          {product.specifications && product.specifications.length > 0 ? (
+            <>
+              {/* Tabs Navigation */}
+              <div className="flex items-center gap-2 border-b border-gray-100 overflow-x-auto no-scrollbar pb-1">
+                {[
+                  { id: 'description', label: 'Description' },
+                  { id: 'specifications', label: 'Specifications' },
+                ].map((tab) => (
+                  <button
+                    key={tab.id}
+                    onClick={() => setActiveTab(tab.id as typeof activeTab)}
+                    className={`px-4 sm:px-6 py-3 font-heading font-semibold text-xs sm:text-sm whitespace-nowrap transition-all border-b-2 -mb-px ${
+                      activeTab === tab.id
+                        ? 'border-[#0B5D36] text-[#0B5D36]'
+                        : 'border-transparent text-gray-500 hover:text-gray-900'
+                    }`}
+                  >
+                    {tab.label}
+                  </button>
+                ))}
+              </div>
 
-          {/* Tab Contents */}
-          <div className="py-6 text-sm text-gray-700 leading-relaxed">
-            {activeTab === 'description' && (
-              <div className="space-y-4">
+              {/* Tab Contents */}
+              <div className="py-6 text-sm text-gray-700 leading-relaxed">
+                {activeTab === 'description' && (
+                  <div className="space-y-4">
+                    {product.full_description ? (
+                      <div
+                        className="prose prose-emerald max-w-none text-gray-700 prose-headings:font-heading prose-headings:text-gray-900"
+                        dangerouslySetInnerHTML={{ __html: product.full_description }}
+                      />
+                    ) : (
+                      <p>{product.short_description || 'Detailed product overview available upon purchase checkout.'}</p>
+                    )}
+                  </div>
+                )}
+
+                {activeTab === 'specifications' && (
+                  <div className="max-w-2xl divide-y divide-gray-100">
+                    {product.specifications.map((spec, idx) => (
+                      <div key={idx} className="grid grid-cols-2 py-3 text-xs sm:text-sm">
+                        <span className="font-semibold text-gray-900">{spec.name}</span>
+                        <span className="text-gray-600">{spec.value}</span>
+                      </div>
+                    ))}
+                  </div>
+                )}
+              </div>
+            </>
+          ) : (
+            <div>
+              <h3 className="font-heading font-bold text-base text-gray-900 border-b border-gray-100 pb-3 mb-4">
+                Product Description
+              </h3>
+              <div className="text-sm text-gray-700 leading-relaxed">
                 {product.full_description ? (
                   <div
                     className="prose prose-emerald max-w-none text-gray-700 prose-headings:font-heading prose-headings:text-gray-900"
                     dangerouslySetInnerHTML={{ __html: product.full_description }}
                   />
                 ) : (
-                  <p>{product.short_description || 'High quality verified product selected for maximum durability and performance.'}</p>
+                  <p>{product.short_description || 'Detailed product information available directly on Daraz.'}</p>
                 )}
               </div>
-            )}
-
-            {activeTab === 'specifications' && (
-              <div className="max-w-2xl divide-y divide-gray-100">
-                {product.specifications && product.specifications.length > 0 ? (
-                  product.specifications.map((spec, idx) => (
-                    <div key={idx} className="grid grid-cols-2 py-3 text-xs sm:text-sm">
-                      <span className="font-semibold text-gray-900">{spec.name}</span>
-                      <span className="text-gray-600">{spec.value}</span>
-                    </div>
-                  ))
-                ) : (
-                  <div className="space-y-2 text-xs sm:text-sm">
-                    <div className="grid grid-cols-2 py-2"><span className="font-semibold text-gray-900">Brand</span><span className="text-gray-600">{product.brand || 'Official'}</span></div>
-                    <div className="grid grid-cols-2 py-2"><span className="font-semibold text-gray-900">Category</span><span className="text-gray-600">{product.category?.name || 'Accessories'}</span></div>
-                    <div className="grid grid-cols-2 py-2"><span className="font-semibold text-gray-900">Currency</span><span className="text-gray-600">BDT (৳)</span></div>
-                    <div className="grid grid-cols-2 py-2"><span className="font-semibold text-gray-900">Condition</span><span className="text-gray-600">100% Brand New Authentic</span></div>
-                  </div>
-                )}
-              </div>
-            )}
-
-            {activeTab === 'reviews' && (
-              <div className="space-y-6">
-                <div className="flex items-center gap-6 p-6 rounded-2xl bg-emerald-50/50 border border-emerald-100 max-w-md">
-                  <div className="text-center">
-                    <p className="font-heading font-extrabold text-4xl text-[#0B5D36]">{product.rating ? Number(product.rating).toFixed(1) : '4.7'}</p>
-                    <div className="flex items-center justify-center text-amber-400 mt-1">
-                      {[...Array(5)].map((_, i) => (
-                        <Star key={i} className="w-4 h-4 fill-amber-400" />
-                      ))}
-                    </div>
-                    <p className="text-xs text-gray-500 mt-1">Based on {product.review_count || '2,100'} verified buyers</p>
-                  </div>
-                </div>
-
-                <div className="space-y-4 max-w-2xl">
-                  <div className="p-4 rounded-xl border border-gray-100 bg-gray-50/50">
-                    <div className="flex items-center justify-between mb-1.5">
-                      <div className="flex items-center gap-2">
-                        <span className="font-bold text-xs text-gray-900">Tanvir A.</span>
-                        <span className="text-[10px] text-emerald-700 bg-emerald-100 px-1.5 py-0.5 rounded">Verified Purchase</span>
-                      </div>
-                      <span className="text-xs text-gray-400">2 days ago</span>
-                    </div>
-                    <p className="text-xs text-gray-600">
-                      Excellent build quality for this price point! Bass is deep and battery backup easily lasted through my entire weekend trip.
-                    </p>
-                  </div>
-
-                  <div className="p-4 rounded-xl border border-gray-100 bg-gray-50/50">
-                    <div className="flex items-center justify-between mb-1.5">
-                      <div className="flex items-center gap-2">
-                        <span className="font-bold text-xs text-gray-900">Sabbir Hossain</span>
-                        <span className="text-[10px] text-emerald-700 bg-emerald-100 px-1.5 py-0.5 rounded">Verified Purchase</span>
-                      </div>
-                      <span className="text-xs text-gray-400">1 week ago</span>
-                    </div>
-                    <p className="text-xs text-gray-600">
-                      Fast delivery to Chittagong within 3 days. Original packaging and genuine product as described.
-                    </p>
-                  </div>
-                </div>
-              </div>
-            )}
-
-            {activeTab === 'delivery' && (
-              <div className="max-w-xl space-y-4">
-                <div className="flex items-start gap-3">
-                  <Truck className="w-5 h-5 text-[#0B5D36] shrink-0 mt-0.5" />
-                  <div>
-                    <h4 className="font-bold text-sm text-gray-900">Delivery Timeframes</h4>
-                    <p className="text-xs text-gray-600 mt-1">
-                      Dhaka City: 1-2 business days.<br />
-                      Outside Dhaka (All 64 districts): 2-4 business days.
-                    </p>
-                  </div>
-                </div>
-                <div className="flex items-start gap-3">
-                  <Check className="w-5 h-5 text-[#0B5D36] shrink-0 mt-0.5" />
-                  <div>
-                    <h4 className="font-bold text-sm text-gray-900">Cash on Delivery & Online Payment</h4>
-                    <p className="text-xs text-gray-600 mt-1">
-                      Pay easily via Cash on Delivery, bKash, Nagad, Visa, Mastercard, or City Bank Amex upon final checkout.
-                    </p>
-                  </div>
-                </div>
-              </div>
-            )}
-
-            {activeTab === 'returns' && (
-              <div className="max-w-xl space-y-3">
-                <div className="flex items-start gap-3">
-                  <RotateCcw className="w-5 h-5 text-[#0B5D36] shrink-0 mt-0.5" />
-                  <div>
-                    <h4 className="font-bold text-sm text-gray-900">7 Days Return Guarantee</h4>
-                    <p className="text-xs text-gray-600 mt-1">
-                      If the item is damaged, defective, or not as described, return it hassle-free within 7 days of delivery for a 100% full refund through the official Daraz buyer protection policy.
-                    </p>
-                  </div>
-                </div>
-              </div>
-            )}
-          </div>
+            </div>
+          )}
         </div>
 
         {/* 4. Sponsored Ad Slot (Adsterra Leaderboard 728x90) */}

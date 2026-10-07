@@ -102,16 +102,22 @@ export function ProductCard({ product, showDirectDarazCta = false }: ProductCard
             </p>
           )}
 
-          {/* Rating and Reviews */}
-          <div className="flex items-center gap-1.5 mt-2">
-            <div className="flex items-center text-amber-500">
-              <Star className="w-3.5 h-3.5 fill-amber-400 text-amber-400" />
-              <span className="text-xs font-bold text-gray-900 ml-1">{product.rating ? Number(product.rating).toFixed(1) : '4.8'}</span>
+          {/* Rating and Reviews (Only shown if real rating exists) */}
+          {Boolean(product.rating && Number(product.rating) > 0) && (
+            <div className="flex items-center gap-1.5 mt-2">
+              <div className="flex items-center text-amber-500">
+                <Star className="w-3.5 h-3.5 fill-amber-400 text-amber-400" />
+                <span className="text-xs font-bold text-gray-900 ml-1">
+                  {Number(product.rating).toFixed(1)}
+                </span>
+              </div>
+              {Boolean(product.review_count && product.review_count > 0) && (
+                <span className="text-xs text-gray-400">
+                  ({product.review_count > 999 ? (product.review_count / 1000).toFixed(1) + 'K' : product.review_count})
+                </span>
+              )}
             </div>
-            <span className="text-xs text-gray-400">
-              ({product.review_count ? `${product.review_count > 999 ? (product.review_count / 1000).toFixed(1) + 'K' : product.review_count}` : '1.2K'})
-            </span>
-          </div>
+          )}
         </div>
 
         {/* 3. Price & Purchase CTA */}

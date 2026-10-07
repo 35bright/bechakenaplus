@@ -127,11 +127,13 @@ export default async function ProductDetailPage({ params }: ProductPageProps) {
       availability: 'https://schema.org/InStock',
       itemCondition: 'https://schema.org/NewCondition',
     },
-    aggregateRating: {
-      '@type': 'AggregateRating',
-      ratingValue: Number(product.rating) || 4.8,
-      reviewCount: product.review_count || 120,
-    },
+    ...(product.rating && Number(product.rating) > 0 ? {
+      aggregateRating: {
+        '@type': 'AggregateRating',
+        ratingValue: Number(product.rating),
+        reviewCount: product.review_count || 1,
+      },
+    } : {}),
   };
 
   const adSettings = (settings as SiteSettings)?.ad_settings;
