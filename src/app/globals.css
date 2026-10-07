@@ -1,0 +1,45 @@
+@import "tailwindcss";
+
+:root {
+  --brand-green: #0B5D36;
+  --brand-green-dark: #074528;
+  --brand-green-hover: #0e7546;
+  --brand-green-light: #e8f5ee;
+  --brand-green-subtle: #f4fbf7;
+  --brand-white: #FFFFFF;
+}
+
+body {
+  font-family: var(--font-inter), var(--font-hind-siliguri), -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+  color: #1f2937;
+  background-color: #fbfdfc;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+h1, h2, h3, h4, h5, h6, .font-heading {
+  font-family: var(--font-poppins), var(--font-hind-siliguri), system-ui, sans-serif;
+}
+
+.font-bengali {
+  font-family: var(--font-hind-siliguri), system-ui, sans-serif;
+}
+
+/* Custom scrollbar for clean ecommerce UI */
+::-webkit-scrollbar {
+  width: 7px;
+  height: 7px;
+}
+
+::-webkit-scrollbar-track {
+  background: #f1f5f3;
+}
+
+::-webkit-scrollbar-thumb {
+  background: #cbd5e1;
+  border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: #0B5D36;
+}
